@@ -1,0 +1,27 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d",
+  "secrets": [
+    {
+      "name": "APPS_SCRIPT_URL",
+      "description": "Google Apps Script Web App /exec URL — the backend for products, orders, and CRM (Google Sheets). Obtain from the deployed Code.gs web app in your Google Apps Script editor (Deploy > Manage deployments).",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "APPS_SCRIPT_TOKEN",
+      "description": "Token sent with each Apps Script request for authentication. Set in your Code.gs deployment.",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "GEMINI_API_KEY",
+      "description": "Google Gemini API key powering the Noah-AI (נועה-AI) chat assistant. Obtain from Google AI Studio (aistudio.google.com).",
+      "requiredAtBoot": false
+    },
+    {
+      "name": "LOVABLE_API_KEY",
+      "description": "Alternative Lovable API key for the AI chat assistant (used if GEMINI_API_KEY is absent). Obtain from your Lovable project settings.",
+      "requiredAtBoot": false
+    }
+  ]
+}
