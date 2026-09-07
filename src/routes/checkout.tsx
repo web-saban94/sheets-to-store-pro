@@ -10,7 +10,8 @@ export const Route = createFileRoute("/checkout")({
       { title: "סיום הזמנה | ח. סבן חומרי בניין" },
       {
         name: "description",
-        content: "השלמת הזמנה עם אפשרויות משלוח, מנוף וקוד קופון. ההזמנה נשלחת ישירות למערכת ההזמנות של החנות.",
+        content:
+          "השלמת הזמנה עם אפשרויות משלוח, מנוף וקוד קופון. ההזמנה נשלחת ישירות למערכת ההזמנות של החנות.",
       },
       { property: "og:title", content: "סיום הזמנה | ח. סבן חומרי בניין" },
       { property: "og:description", content: "עגלה חכמה עם משלוח, מנוף וקופונים." },
@@ -26,8 +27,9 @@ function Checkout() {
   const [orderId, setOrderId] = useState("");
   const [message, setMessage] = useState("");
 
-  const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [k]: e.target.value }));
+  const set =
+    (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
 
   async function placeOrder(e: React.FormEvent) {
     e.preventDefault();
@@ -61,10 +63,17 @@ function Checkout() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="text-3xl font-black text-platinum">ההזמנה התקבלה 🎉</h1>
-        <p className="mt-3 text-muted-foreground">מספר הזמנה: <span className="font-bold text-platinum">{orderId}</span></p>
+        <p className="mt-3 text-muted-foreground">
+          מספר הזמנה: <span className="font-bold text-platinum">{orderId}</span>
+        </p>
         {message && <p className="mt-2 text-sm text-muted-foreground">{message}</p>}
-        <p className="mt-4 text-sm text-muted-foreground">נציג יחזור אליכם לאישור מלאי, מועד אספקה ותיאום מנוף.</p>
-        <Link to="/catalog" className="mt-8 inline-block rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground">
+        <p className="mt-4 text-sm text-muted-foreground">
+          נציג יחזור אליכם לאישור מלאי, מועד אספקה ותיאום מנוף.
+        </p>
+        <Link
+          to="/catalog"
+          className="mt-8 inline-block rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground"
+        >
           חזרה לקטלוג
         </Link>
       </div>
@@ -77,16 +86,27 @@ function Checkout() {
         <h1 className="text-3xl font-black text-platinum sm:text-4xl">סיום הזמנה</h1>
 
         <div className="frame mt-6 divide-y divide-border">
-          {cart.lines.length === 0 && <p className="p-6 text-sm text-muted-foreground">העגלה ריקה.</p>}
+          {cart.lines.length === 0 && (
+            <p className="p-6 text-sm text-muted-foreground">העגלה ריקה.</p>
+          )}
           {cart.lines.map((l) => {
             const p = PRODUCTS.find((x) => x.id === l.productId);
             if (!p) return null;
             return (
               <div key={l.productId} className="flex items-center gap-4 p-4">
-                <img src={p.image} alt={p.name} width={80} height={80} loading="lazy" className="size-16 rounded-lg object-cover" />
+                <img
+                  src={p.image}
+                  alt={p.name}
+                  width={80}
+                  height={80}
+                  loading="lazy"
+                  className="size-16 rounded-lg object-cover"
+                />
                 <div className="flex-1">
                   <p className="text-sm font-bold text-platinum">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">מק״ט {p.sku} · {shekel(p.price)} / {p.unit}</p>
+                  <p className="text-xs text-muted-foreground">
+                    מק״ט {p.sku} · {shekel(p.price)} / {p.unit}
+                  </p>
                 </div>
                 <input
                   type="number"
@@ -95,7 +115,9 @@ function Checkout() {
                   onChange={(e) => cart.setQty(p.id, Number(e.target.value))}
                   className="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm"
                 />
-                <span className="w-24 text-end text-sm font-bold text-platinum">{shekel(p.price * l.qty)}</span>
+                <span className="w-24 text-end text-sm font-bold text-platinum">
+                  {shekel(p.price * l.qty)}
+                </span>
               </div>
             );
           })}
@@ -135,7 +157,9 @@ function Checkout() {
           </label>
 
           {status === "error" && (
-            <p className="text-sm text-destructive">שליחת ההזמנה נכשלה. אפשר לנסות שוב או להתקשר לסניף.</p>
+            <p className="text-sm text-destructive">
+              שליחת ההזמנה נכשלה. אפשר לנסות שוב או להתקשר לסניף.
+            </p>
           )}
 
           <button
@@ -202,11 +226,15 @@ function Toggle({
       type="button"
       onClick={() => onChange(!checked)}
       className={`flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
-        checked ? "border-primary bg-primary/10 text-platinum" : "border-border text-muted-foreground"
+        checked
+          ? "border-primary bg-primary/10 text-platinum"
+          : "border-border text-muted-foreground"
       }`}
     >
       {label}
-      <span className={`size-4 rounded-full border ${checked ? "border-primary bg-primary" : "border-border"}`} />
+      <span
+        className={`size-4 rounded-full border ${checked ? "border-primary bg-primary" : "border-border"}`}
+      />
     </button>
   );
 }

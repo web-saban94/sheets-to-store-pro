@@ -41,7 +41,11 @@ export const submitOrder = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => OrderSchema.parse(input))
   .handler(async ({ data }) => {
     const orderId = `SB-${Date.now().toString().slice(-8)}`;
-    const result = await postToSheets("createOrder", { ...data, orderId, createdAt: new Date().toISOString() });
+    const result = await postToSheets("createOrder", {
+      ...data,
+      orderId,
+      createdAt: new Date().toISOString(),
+    });
     return { ...result, orderId };
   });
 
@@ -56,7 +60,10 @@ const CustomerSchema = z.object({
 export const customerAuth = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => CustomerSchema.parse(input))
   .handler(async ({ data }) => {
-    const result = await postToSheets(data.mode === "login" ? "loginCustomer" : "createCustomer", data);
+    const result = await postToSheets(
+      data.mode === "login" ? "loginCustomer" : "createCustomer",
+      data,
+    );
     return { ok: true, ...result };
   });
 

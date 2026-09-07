@@ -1,0 +1,6 @@
+{
+  "name": "ח. סבן חומרי בניין (1994) — Sheets to Store Pro",
+  "description": "חנות חומרי בניין מקצועית בהוד השרון עם קטלוג מוצרים, סנכרון הזמנות ולידים עם Google Sheets וסיוע AI עם נועה",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

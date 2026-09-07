@@ -192,7 +192,7 @@ export const PRODUCTS: Product[] = [
   {
     id: "p11",
     sku: "AGG-SND",
-    name: 'חול מחצבה ממוין 1 טון (ביג בג)',
+    name: "חול מחצבה ממוין 1 טון (ביג בג)",
     brand: "נשר",
     categoryId: "building",
     price: 240,
@@ -249,8 +249,16 @@ export const HERO_SLIDES = [
 ];
 
 export const BRANCHES = [
-  { name: "סניף התלמיד 6, הוד השרון", hours: "א׳-ה׳ 06:30-17:00 · ו׳ 06:30-13:00", phone: "09-7000000" },
-  { name: "סניף החרש 10, הוד השרון", hours: "א׳-ה׳ 07:00-17:00 · ו׳ 07:00-13:00", phone: "09-7000001" },
+  {
+    name: "סניף התלמיד 6, הוד השרון",
+    hours: "א׳-ה׳ 06:30-17:00 · ו׳ 06:30-13:00",
+    phone: "09-7000000",
+  },
+  {
+    name: "סניף החרש 10, הוד השרון",
+    hours: "א׳-ה׳ 07:00-17:00 · ו׳ 07:00-13:00",
+    phone: "09-7000001",
+  },
 ];
 
 export const COUPONS: Record<string, number> = {

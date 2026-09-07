@@ -25,7 +25,11 @@ export const Route = createFileRoute("/")({
 
 const BENEFITS = [
   { icon: Truck, title: "משלוח ומנוף", text: "אספקה לאתר באזור השרון, פריקה במנוף בתיאום מראש." },
-  { icon: ShieldCheck, title: "מותגי פרימיום", text: "נשר, טמבור, נירלט, פזקר, כרמית, איטונג ובוש." },
+  {
+    icon: ShieldCheck,
+    title: "מותגי פרימיום",
+    text: "נשר, טמבור, נירלט, פזקר, כרמית, איטונג ובוש.",
+  },
   { icon: Wrench, title: "ייעוץ טכני", text: "התאמת מוצר, כמויות וזמני ייבוש לכל פרויקט." },
   { icon: Sparkles, title: "מבצעי שבוע", text: "מחירי קבלן מתעדכנים מדי שבוע בקטלוג." },
 ];
@@ -51,7 +55,12 @@ function Index() {
         <h2 className="text-2xl font-black text-platinum sm:text-3xl">קטגוריות</h2>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {CATEGORIES.map((c) => (
-            <Link key={c.id} to="/catalog" search={{ category: c.id }} className="frame group overflow-hidden">
+            <Link
+              key={c.id}
+              to="/catalog"
+              search={{ category: c.id }}
+              className="frame group overflow-hidden"
+            >
               <div className="aspect-[4/3] overflow-hidden border-b border-border">
                 <img
                   src={c.image}
@@ -100,7 +109,10 @@ function Index() {
           <div key={b.name} className="frame p-7">
             <h2 className="text-xl font-bold text-platinum">{b.name}</h2>
             <p className="mt-2 text-sm text-muted-foreground">{b.hours}</p>
-            <a href={`tel:${b.phone}`} className="mt-4 inline-block rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground">
+            <a
+              href={`tel:${b.phone}`}
+              className="mt-4 inline-block rounded-xl bg-primary px-5 py-3 text-sm font-bold text-primary-foreground"
+            >
               חיוג לסניף {b.phone}
             </a>
           </div>

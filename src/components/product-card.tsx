@@ -31,7 +31,9 @@ export function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <span className="text-[11px] font-semibold tracking-wider text-primary">{product.brand}</span>
+        <span className="text-[11px] font-semibold tracking-wider text-primary">
+          {product.brand}
+        </span>
         <h3 className="mt-1 text-base font-bold leading-snug text-platinum">{product.name}</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{product.description}</p>
 

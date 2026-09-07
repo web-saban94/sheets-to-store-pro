@@ -8,7 +8,8 @@ export const Route = createFileRoute("/account")({
       { title: "אזור אישי ללקוחות | ח. סבן חומרי בניין" },
       {
         name: "description",
-        content: "כניסה לאזור הלקוחות או פתיחת כרטיס לקוח חדש — מעקב הזמנות, הצעות מחיר ותנאי אשראי.",
+        content:
+          "כניסה לאזור הלקוחות או פתיחת כרטיס לקוח חדש — מעקב הזמנות, הצעות מחיר ותנאי אשראי.",
       },
       { property: "og:title", content: "אזור אישי ללקוחות | ח. סבן חומרי בניין" },
       { property: "og:description", content: "ניהול כרטיס לקוח, הזמנות ותנאים מיוחדים לקבלנים." },
@@ -66,15 +67,36 @@ function Account() {
       <form onSubmit={submit} className="frame mt-6 space-y-4 p-6">
         {mode === "register" && (
           <>
-            <Input label="שם מלא *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} required />
-            <Input label="שם חברה / ח.פ" value={form.company} onChange={(v) => setForm({ ...form, company: v })} />
+            <Input
+              label="שם מלא *"
+              value={form.name}
+              onChange={(v) => setForm({ ...form, name: v })}
+              required
+            />
+            <Input
+              label="שם חברה / ח.פ"
+              value={form.company}
+              onChange={(v) => setForm({ ...form, company: v })}
+            />
           </>
         )}
-        <Input label="טלפון *" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} required />
-        <Input label="אימייל" value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
+        <Input
+          label="טלפון *"
+          value={form.phone}
+          onChange={(v) => setForm({ ...form, phone: v })}
+          required
+        />
+        <Input
+          label="אימייל"
+          value={form.email}
+          onChange={(v) => setForm({ ...form, email: v })}
+          type="email"
+        />
 
         {state === "ok" && <p className="text-sm text-primary">{reply}</p>}
-        {state === "error" && <p className="text-sm text-destructive">אירעה תקלה. אפשר לנסות שוב.</p>}
+        {state === "error" && (
+          <p className="text-sm text-destructive">אירעה תקלה. אפשר לנסות שוב.</p>
+        )}
 
         <button
           type="submit"

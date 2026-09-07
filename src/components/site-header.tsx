@@ -88,7 +88,11 @@ export function SiteHeader() {
           <aside className="absolute inset-y-0 start-0 w-80 max-w-[85%] border-e border-border bg-surface p-5 shadow-frame">
             <div className="flex items-center justify-between">
               <span className="text-lg font-bold text-platinum">תפריט</span>
-              <button onClick={() => setOpen(false)} aria-label="סגירה" className="rounded-lg p-2 hover:bg-secondary">
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="סגירה"
+                className="rounded-lg p-2 hover:bg-secondary"
+              >
                 <X className="size-5" />
               </button>
             </div>

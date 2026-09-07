@@ -14,10 +14,14 @@ export const Route = createFileRoute("/catalog")({
       { title: "קטלוג מוצרים | ח. סבן חומרי בניין" },
       {
         name: "description",
-        content: "קטלוג חומרי בניין, צבעים, איטום וכלי עבודה עם נתוני כיסוי למ״ר, זמן ייבוש ושיטת יישום.",
+        content:
+          "קטלוג חומרי בניין, צבעים, איטום וכלי עבודה עם נתוני כיסוי למ״ר, זמן ייבוש ושיטת יישום.",
       },
       { property: "og:title", content: "קטלוג מוצרים | ח. סבן חומרי בניין" },
-      { property: "og:description", content: "מאות פריטים מקצועיים עם מפרט טכני מלא והזמנה אונליין." },
+      {
+        property: "og:description",
+        content: "מאות פריטים מקצועיים עם מפרט טכני מלא והזמנה אונליין.",
+      },
     ],
   }),
   component: Catalog,
@@ -68,7 +72,9 @@ function Catalog() {
         <button
           onClick={() => navigate({ search: {} })}
           className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
-            !category ? "border-primary bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:text-platinum"
+            !category
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-border text-muted-foreground hover:text-platinum"
           }`}
         >
           הכל
@@ -94,7 +100,9 @@ function Catalog() {
         ))}
       </div>
       {products.length === 0 && (
-        <p className="mt-10 text-center text-muted-foreground">לא נמצאו מוצרים תואמים. נסו חיפוש אחר.</p>
+        <p className="mt-10 text-center text-muted-foreground">
+          לא נמצאו מוצרים תואמים. נסו חיפוש אחר.
+        </p>
       )}
     </div>
   );
