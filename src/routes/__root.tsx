@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -16,6 +17,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { CartDrawer } from "@/components/cart-drawer";
 import { NoahChat } from "@/components/noah-chat";
+import { LogoVideoSplash } from "@/components/logo-video-splash";
 
 function NotFoundComponent() {
   return (
@@ -76,9 +78,21 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
+      { title: "ח. סבן חומרי בניין (1994) בע״מ — שיווק חומרי בניין, צבעים ואיטום בהוד השרון" },
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "author", content: "ח. סבן חומרי בניין (1994) בע״מ" },
+      {
+        name: "description",
+        content:
+          "חנות חומרי בניין מקצועית בהוד השרון: מלט, בלוקים, צבעים, איטום וכלי עבודה, עם משלוח ומנוף וייעוץ טכני.",
+      },
+      { property: "og:title", content: "ח. סבן חומרי בניין (1994) בע״מ" },
+      {
+        property: "og:description",
+        content:
+          "חנות חומרי בניין מקצועית בהוד השרון עם קטלוג מוצרים, סנכרון הזמנות ו-Google Sheets.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -103,6 +117,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="he" dir="rtl">
       <head>
+        <title>ח. סבן חומרי בניין (1994) בע״מ — שיווק חומרי בניין, צבעים ואיטום בהוד השרון</title>
         <HeadContent />
       </head>
       <body>
@@ -113,12 +128,26 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const PAGE_TITLES: Record<string, string> = {
+  "/": "ח. סבן חומרי בניין (1994) בע״מ — שיווק חומרי בניין, צבעים ואיטום בהוד השרון",
+  "/catalog": "קטלוג מוצרים | ח. סבן חומרי בניין (1994) בע״מ",
+  "/checkout": "סיום הזמנה וקופה | ח. סבן חומרי בניין (1994) בע״מ",
+  "/account": "אזור אישי ו-CRM לקוחות | ח. סבן חומרי בניין (1994) בע״מ",
+};
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const location = useLocation();
+
+  useEffect(() => {
+    const title = PAGE_TITLES[location.pathname] || "ח. סבן חומרי בניין (1994) בע״מ";
+    document.title = title;
+  }, [location.pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
+        <LogoVideoSplash />
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
           <main className="flex-1">

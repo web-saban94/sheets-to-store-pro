@@ -26,12 +26,40 @@ export function SiteHeader() {
           <Menu className="size-5" />
         </button>
 
-        <Link to="/" className="flex items-center gap-3">
-          <span className="grid size-10 place-items-center rounded-lg bg-primary text-lg font-black text-primary-foreground">
-            ח.ס
-          </span>
+        <Link
+          to="/"
+          className="group flex items-center gap-3"
+          onClick={() => {
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("replay-hsaban-intro"));
+            }
+          }}
+          title="חזרה לדף הבית / ניגון מחדש של שער הפתיחה"
+        >
+          <div className="relative overflow-hidden rounded-xl border border-amber-500/40 bg-gradient-to-br from-[#0F172A] to-[#1E293B] p-0.5 shadow-md shadow-sky-900/30 transition-all duration-300 group-hover:border-amber-400 group-hover:shadow-amber-500/20">
+            {/* Small video snippet in header logo box */}
+            <div className="relative size-10 overflow-hidden rounded-[10px] bg-primary">
+              <video
+                src="/hsaban_logo.mp4"
+                playsInline
+                autoPlay
+                muted
+                loop
+                className="absolute inset-0 size-full object-cover opacity-90 transition-transform duration-300 group-hover:scale-110"
+                onError={(e) => {
+                  // Fallback to text icon if video not yet present
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+              <span className="grid size-full place-items-center text-base font-black text-primary-foreground">
+                ח.ס
+              </span>
+            </div>
+          </div>
           <span className="leading-tight">
-            <span className="block text-sm font-extrabold text-platinum">ח. סבן חומרי בניין</span>
+            <span className="block text-sm font-extrabold text-platinum transition-colors group-hover:text-sky-300">
+              ח. סבן חומרי בניין
+            </span>
             <span className="block text-[11px] text-muted-foreground">(1994) בע״מ · הוד השרון</span>
           </span>
         </Link>

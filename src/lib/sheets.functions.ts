@@ -7,7 +7,9 @@ import { z } from "zod";
  * If it is not configured, calls succeed locally so the UI stays usable.
  */
 async function postToSheets(action: string, payload: unknown): Promise<Record<string, unknown>> {
-  const url = process.env["APPS_SCRIPT_URL"];
+  const url =
+    process.env["APPS_SCRIPT_URL"] ||
+    "https://script.google.com/macros/s/AKfycbxFM8bIAuKEudnY9VUMvwVdKhZZJ6jGw73qOF20mSkjsZc2C38HWG3wrjVhsersbGwGGg/exec";
   if (!url) {
     return { ok: true, offline: true, message: "לא הוגדר חיבור לגיליון — הבקשה נשמרה מקומית." };
   }
@@ -46,7 +48,7 @@ export const submitOrder = createServerFn({ method: "POST" })
       orderId,
       createdAt: new Date().toISOString(),
     });
-    return { ...result, orderId };
+    return { ...result, orderId, syncedToSheet: result.ok === true && !result.offline };
   });
 
 const CustomerSchema = z.object({
@@ -79,3 +81,82 @@ export const logChat = createServerFn({ method: "POST" })
     await postToSheets("logChat", { ...data, createdAt: new Date().toISOString() });
     return { ok: true };
   });
+
+export const fetchLiveCatalog = createServerFn({ method: "GET" }).handler(async () => {
+  const url =
+    process.env["APPS_SCRIPT_URL"] ||
+    "https://script.google.com/macros/s/AKfycbxFM8bIAuKEudnY9VUMvwVdKhZZJ6jGw73qOF20mSkjsZc2C38HWG3wrjVhsersbGwGGg/exec";
+  if (!url) return { ok: false, products: [] };
+  try {
+    const res = await fetch(`${url}?action=catalog&_t=${Date.now()}`, {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    if (!res.ok) return { ok: false, products: [] };
+    const data = (await res.json()) as { ok?: boolean; products?: Array<Record<string, unknown>> };
+    return { ok: true, products: Array.isArray(data.products) ? data.products : [] };
+  } catch {
+    return { ok: false, products: [] };
+  }
+});
+
+export const pingAppsScript = createServerFn({ method: "GET" }).handler(async () => {
+  const url =
+    process.env["APPS_SCRIPT_URL"] ||
+    "https://script.google.com/macros/s/AKfycbxFM8bIAuKEudnY9VUMvwVdKhZZJ6jGw73qOF20mSkjsZc2C38HWG3wrjVhsersbGwGGg/exec";
+  const start = Date.now();
+  if (!url) {
+    return {
+      ok: false,
+      latencyMs: 0,
+      error: "כתובת APPS_SCRIPT_URL אינה מוגדרת",
+      timestamp: new Date().toISOString(),
+    };
+  }
+  try {
+    const res = await fetch(`${url}?action=ping&_t=${Date.now()}`, {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    const latencyMs = Date.now() - start;
+    if (!res.ok) {
+      return {
+        ok: false,
+        latencyMs,
+        error: `שגיאת שרת ${res.status}`,
+        timestamp: new Date().toISOString(),
+      };
+    }
+    const data = (await res.json()) as Record<string, unknown>;
+    return {
+      ok: data.ok === true,
+      latencyMs,
+      service: typeof data.service === "string" ? data.service : "Google Sheets Sync",
+      status: typeof data.status === "string" ? data.status : "פעיל ומחובר",
+      version: typeof data.version === "string" ? data.version : "2.6",
+      timestamp: typeof data.timestamp === "string" ? data.timestamp : new Date().toISOString(),
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      latencyMs: Date.now() - start,
+      error: err instanceof Error ? err.message : "שגיאת תקשורת עם Apps Script",
+      timestamp: new Date().toISOString(),
+    };
+  }
+});
+
+export const fetchLiveOrders = createServerFn({ method: "GET" }).handler(async () => {
+  const url =
+    process.env["APPS_SCRIPT_URL"] ||
+    "https://script.google.com/macros/s/AKfycbxFM8bIAuKEudnY9VUMvwVdKhZZJ6jGw73qOF20mSkjsZc2C38HWG3wrjVhsersbGwGGg/exec";
+  if (!url) return { ok: false, orders: [] };
+  try {
+    const res = await fetch(`${url}?action=orders&_t=${Date.now()}`, {
+      headers: { "Cache-Control": "no-cache" },
+    });
+    if (!res.ok) return { ok: false, orders: [] };
+    const data = (await res.json()) as { ok?: boolean; orders?: Array<Record<string, unknown>> };
+    return { ok: true, orders: Array.isArray(data.orders) ? data.orders : [] };
+  } catch {
+    return { ok: false, orders: [] };
+  }
+});
