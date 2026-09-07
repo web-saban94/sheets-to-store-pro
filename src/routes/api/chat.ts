@@ -22,47 +22,52 @@ export const Route = createFileRoute("/api/chat")({
         const lovableKey = process.env["LOVABLE_API_KEY"];
 
         if (geminiKey) {
-          try {
-            const contents = messages.map((m) => ({
-              role: m.role === "assistant" ? "model" : "user",
-              parts: [{ text: m.content }],
-            }));
-            const res = await fetch(
-              `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  system_instruction: {
-                    parts: [{ text: SYSTEM }],
-                  },
-                  contents,
-                }),
-              },
-            );
+          const modelsToTry = ["gemini-3.8-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
+          const contents = messages.map((m) => ({
+            role: m.role === "assistant" ? "model" : "user",
+            parts: [{ text: m.content }],
+          }));
 
-            if (!res.ok) {
-              const errText = await res.text();
-              console.error("Gemini API error:", errText);
-              return Response.json(
-                { reply: "אירעה תקלה זמנית בתקשורת עם שירות ה-AI. אפשר לנסות שוב בעוד רגע." },
-                { status: 200 },
+          for (const model of modelsToTry) {
+            try {
+              const res = await fetch(
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    system_instruction: {
+                      parts: [{ text: SYSTEM }],
+                    },
+                    contents,
+                  }),
+                },
               );
-            }
 
-            const data = (await res.json()) as {
-              candidates?: Array<{
-                content?: { parts?: Array<{ text?: string }> };
-              }>;
-            };
-            const reply =
-              data.candidates?.[0]?.content?.parts?.[0]?.text ??
-              "לא הצלחתי לנסח תשובה, אפשר לנסות לנסח מחדש?";
-            return Response.json({ reply });
-          } catch (e) {
-            console.error("Gemini fetch error:", e);
+              if (!res.ok) {
+                const errText = await res.text();
+                console.error(`Gemini API error with ${model}:`, errText);
+                continue;
+              }
+
+              const data = (await res.json()) as {
+                candidates?: Array<{
+                  content?: { parts?: Array<{ text?: string }> };
+                }>;
+              };
+              const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (reply) {
+                return Response.json({ reply });
+              }
+            } catch (e) {
+              console.error(`Gemini fetch error with ${model}:`, e);
+            }
+          }
+
+          // If all direct Gemini models failed, try Lovable if available
+          if (!lovableKey) {
             return Response.json(
-              { reply: "אירעה תקלה זמנית בצ׳אט. נשמח לעזור טלפונית בסניף." },
+              { reply: "אירעה תקלה זמנית בתקשורת עם שירות ה-AI. נשמח לעזור טלפונית בסניף." },
               { status: 200 },
             );
           }

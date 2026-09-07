@@ -113,9 +113,39 @@ export const pingAppsScript = createServerFn({ method: "GET" }).handler(async ()
     };
   }
   try {
-    const res = await fetch(`${url}?action=ping&_t=${Date.now()}`, {
-      headers: { "Cache-Control": "no-cache" },
+    let targetUrl = `${url}?action=ping&_t=${Date.now()}`;
+    let res = await fetch(targetUrl, {
+      headers: {
+        "Cache-Control": "no-cache",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) SabanSite/1.0",
+      },
     });
+
+    let rawText = await res.text();
+    let data: Record<string, unknown> = {};
+    try {
+      data = JSON.parse(rawText) as Record<string, unknown>;
+    } catch {
+      data = { rawText };
+    }
+
+    // אם גרסת ה-Apps Script הפרוסה עדיין לא עודכנה ל-action=ping, נבדוק קישוריות דרך action=orders
+    if (data.ok === false && String(data.error || "").includes("Unknown action: ping")) {
+      targetUrl = `${url}?action=orders&_t=${Date.now()}`;
+      res = await fetch(targetUrl, {
+        headers: {
+          "Cache-Control": "no-cache",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) SabanSite/1.0",
+        },
+      });
+      rawText = await res.text();
+      try {
+        data = JSON.parse(rawText) as Record<string, unknown>;
+      } catch {
+        data = { rawText };
+      }
+    }
+
     const latencyMs = Date.now() - start;
     if (!res.ok) {
       return {
@@ -125,12 +155,23 @@ export const pingAppsScript = createServerFn({ method: "GET" }).handler(async ()
         timestamp: new Date().toISOString(),
       };
     }
-    const data = (await res.json()) as Record<string, unknown>;
+
+    const isOk =
+      data.ok === true ||
+      String(data.ok).toLowerCase() === "true" ||
+      data.status === "פעיל ומחובר" ||
+      Array.isArray(data.orders) ||
+      Array.isArray(data.products) ||
+      (typeof data.service === "string" && data.service.includes("סבן"));
+
     return {
-      ok: data.ok === true,
+      ok: isOk,
       latencyMs,
-      service: typeof data.service === "string" ? data.service : "Google Sheets Sync",
-      status: typeof data.status === "string" ? data.status : "פעיל ומחובר",
+      service:
+        typeof data.service === "string"
+          ? data.service
+          : "ח. סבן חומרי בניין (1994) בע״מ — Google Sheets",
+      status: isOk ? "פעיל ומחובר" : "שגיאה בחיבור",
       version: typeof data.version === "string" ? data.version : "2.6",
       timestamp: typeof data.timestamp === "string" ? data.timestamp : new Date().toISOString(),
     };

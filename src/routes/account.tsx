@@ -3,6 +3,7 @@ import { useState, useEffect, useTransition } from "react";
 import { ShieldCheck, RefreshCw } from "lucide-react";
 import { customerAuth, fetchLiveOrders } from "@/lib/sheets.functions";
 import { ConnectionStatusCard } from "@/components/connection-status-card";
+import { GoogleSheetsPanel } from "@/components/google-sheets-panel";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -175,6 +176,9 @@ function AdminDashboard() {
     <div className="mt-8 space-y-6">
       {/* Real-time Connection Status Card */}
       <ConnectionStatusCard />
+
+      {/* Google Sheets & Drive OAuth Integration Panel */}
+      <GoogleSheetsPanel />
 
       {/* Orders summary synced from Sheet */}
       <div className="frame p-5">

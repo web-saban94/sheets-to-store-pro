@@ -29,6 +29,18 @@ export function ConnectionStatusCard() {
   const runPing = () => {
     startPing(async () => {
       try {
+        // קריאה ישירה למסלול /api/ping של השרת
+        const apiRes = await fetch("/api/ping", {
+          headers: { "Cache-Control": "no-cache" },
+        });
+        if (apiRes.ok) {
+          const data = (await apiRes.json()) as PingResult;
+          setResult(data);
+          setLastChecked(new Date());
+          return;
+        }
+
+        // גיבוי דרך ServerFn
         const res = await pingAppsScript();
         setResult(res as PingResult);
         setLastChecked(new Date());
