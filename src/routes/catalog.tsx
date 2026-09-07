@@ -3,11 +3,11 @@ import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
 import { BRANDS, CATEGORIES, PRODUCTS } from "@/lib/catalog";
 
-type CatalogSearch = { category?: string };
+type CatalogSearch = { category?: string | undefined };
 
 export const Route = createFileRoute("/catalog")({
   validateSearch: (search: Record<string, unknown>): CatalogSearch => ({
-    category: typeof search.category === "string" ? search.category : undefined,
+    category: typeof search["category"] === "string" ? (search["category"] as string) : undefined,
   }),
   head: () => ({
     meta: [

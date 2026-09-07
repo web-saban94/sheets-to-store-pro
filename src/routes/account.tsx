@@ -28,9 +28,10 @@ function Account() {
     setState("sending");
     try {
       const res = await customerAuth({ data: { mode, ...form } });
+      const msg = (res as Record<string, unknown>)["message"];
       setReply(
-        typeof (res as { message?: string }).message === "string"
-          ? (res as { message: string }).message
+        typeof msg === "string"
+          ? msg
           : mode === "login"
             ? "אימות נשלח למערכת. נציג יאשר את הכניסה בהקדם."
             : "כרטיס הלקוח נוצר ונשמר במערכת ה-CRM שלנו.",

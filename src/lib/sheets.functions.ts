@@ -6,7 +6,7 @@ import { z } from "zod";
  * Set the secret APPS_SCRIPT_URL to the /exec URL of the deployed Code.gs web app.
  * If it is not configured, calls succeed locally so the UI stays usable.
  */
-async function postToSheets(action: string, payload: unknown) {
+async function postToSheets(action: string, payload: unknown): Promise<Record<string, unknown>> {
   const url = process.env["APPS_SCRIPT_URL"];
   if (!url) {
     return { ok: true, offline: true, message: "לא הוגדר חיבור לגיליון — הבקשה נשמרה מקומית." };
@@ -42,7 +42,7 @@ export const submitOrder = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const orderId = `SB-${Date.now().toString().slice(-8)}`;
     const result = await postToSheets("createOrder", { ...data, orderId, createdAt: new Date().toISOString() });
-    return { orderId, ...result };
+    return { ...result, orderId };
   });
 
 const CustomerSchema = z.object({

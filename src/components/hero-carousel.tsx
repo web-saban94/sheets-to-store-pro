@@ -10,6 +10,8 @@ export function HeroCarousel() {
     return () => clearInterval(id);
   }, []);
 
+  const active = HERO_SLIDES[index] ?? HERO_SLIDES[0]!;
+
   return (
     <section className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
       {HERO_SLIDES.map((slide, i) => (
@@ -32,19 +34,19 @@ export function HeroCarousel() {
       <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-4">
         <div className="max-w-xl">
           <span className="inline-block rounded-full border border-primary/50 bg-primary/10 px-4 py-1.5 text-xs font-semibold tracking-wide text-platinum">
-            {HERO_SLIDES[index].eyebrow}
+            {active.eyebrow}
           </span>
           <h1 className="mt-5 text-4xl font-black leading-tight text-platinum sm:text-6xl">
-            {HERO_SLIDES[index].title}
+            {active.title}
           </h1>
-          <p className="mt-4 text-base text-muted-foreground sm:text-lg">{HERO_SLIDES[index].subtitle}</p>
+          <p className="mt-4 text-base text-muted-foreground sm:text-lg">{active.subtitle}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/catalog"
-              search={{ category: HERO_SLIDES[index].categoryId }}
+              search={{ category: active.categoryId }}
               className="rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-glow transition-opacity hover:opacity-90"
             >
-              {HERO_SLIDES[index].cta}
+              {active.cta}
             </Link>
             <Link
               to="/catalog"

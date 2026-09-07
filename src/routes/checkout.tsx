@@ -49,7 +49,7 @@ function Checkout() {
         },
       });
       setOrderId(res.orderId);
-      setMessage(typeof res.message === "string" ? res.message : "");
+      setMessage(typeof res["message"] === "string" ? (res["message"] as string) : "");
       setStatus("done");
       cart.clear();
     } catch {
