@@ -83,17 +83,30 @@ export const logChat = createServerFn({ method: "POST" })
   });
 
 export const fetchLiveCatalog = createServerFn({ method: "GET" }).handler(async () => {
-  const url =
-    process.env["APPS_SCRIPT_URL"] ||
+  const BACKUP_URL =
     "https://script.google.com/macros/s/AKfycbxFM8bIAuKEudnY9VUMvwVdKhZZJ6jGw73qOF20mSkjsZc2C38HWG3wrjVhsersbGwGGg/exec";
+  const url = process.env["APPS_SCRIPT_URL"] || BACKUP_URL;
   if (!url) return { ok: false, products: [] };
   try {
-    const res = await fetch(`${url}?action=catalog&_t=${Date.now()}`, {
-      headers: { "Cache-Control": "no-cache" },
-    });
-    if (!res.ok) return { ok: false, products: [] };
-    const data = (await res.json()) as { ok?: boolean; products?: Array<Record<string, unknown>> };
-    return { ok: true, products: Array.isArray(data.products) ? data.products : [] };
+    const fetchHelper = async (endpoint: string) => {
+      const res = await fetch(`${endpoint}?action=catalog&_t=${Date.now()}`, {
+        redirect: "follow",
+        headers: { "Cache-Control": "no-cache" },
+      });
+      if (!res.ok) return [];
+      const data = (await res.json()) as {
+        ok?: boolean;
+        products?: Array<Record<string, unknown>>;
+      };
+      return Array.isArray(data.products) ? data.products : [];
+    };
+
+    let products = await fetchHelper(url);
+    if (products.length === 0 && url !== BACKUP_URL) {
+      products = await fetchHelper(BACKUP_URL);
+    }
+
+    return { ok: true, products, count: products.length };
   } catch {
     return { ok: false, products: [] };
   }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { User } from "firebase/auth";
 import {
   FileSpreadsheet,
@@ -58,6 +58,57 @@ export function GoogleSheetsPanel() {
     status: "בטיפול",
   });
 
+  const loadTabValues = useCallback(async (id: string, tabName: string) => {
+    setIsLoadingValues(true);
+    try {
+      const values = await getSpreadsheetValues(id, `'${tabName}'!A1:Z30`);
+      setTabValues(values);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "שגיאה בטעינת שורות הגיליון");
+    } finally {
+      setIsLoadingValues(false);
+    }
+  }, []);
+
+  const selectSpreadsheet = useCallback(
+    async (id: string) => {
+      setSelectedSheetId(id);
+      setIsLoadingValues(true);
+      setActionError(null);
+      try {
+        const details = await getSpreadsheetDetails(id);
+        setSheetDetails(details);
+        const firstTabName = details.sheets[0]?.properties.title || "Sheet1";
+        setSelectedTab(firstTabName);
+        await loadTabValues(id, firstTabName);
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : "שגיאה בקריאת פרטי הגיליון");
+      } finally {
+        setIsLoadingValues(false);
+      }
+    },
+    [loadTabValues],
+  );
+
+  const loadSpreadsheets = useCallback(async () => {
+    setIsLoadingList(true);
+    setActionError(null);
+    try {
+      const files = await listUserSpreadsheets();
+      setSpreadsheets(files);
+      if (files.length > 0 && !selectedSheetId) {
+        const first = files[0];
+        if (first?.id) {
+          selectSpreadsheet(first.id);
+        }
+      }
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "נכשל בטעינת גיליונות מ-Google Drive");
+    } finally {
+      setIsLoadingList(false);
+    }
+  }, [selectSpreadsheet, selectedSheetId]);
+
   // Initialize Auth state
   useEffect(() => {
     const unsubscribe = initAuth(
@@ -76,7 +127,7 @@ export function GoogleSheetsPanel() {
       },
     );
     return () => unsubscribe();
-  }, []);
+  }, [loadSpreadsheets]);
 
   async function handleGoogleLogin() {
     setIsSigningIn(true);
@@ -105,54 +156,6 @@ export function GoogleSheetsPanel() {
     setSelectedSheetId(null);
     setSheetDetails(null);
     setTabValues([]);
-  }
-
-  async function loadSpreadsheets() {
-    setIsLoadingList(true);
-    setActionError(null);
-    try {
-      const files = await listUserSpreadsheets();
-      setSpreadsheets(files);
-      if (files.length > 0 && !selectedSheetId) {
-        const first = files[0];
-        if (first?.id) {
-          selectSpreadsheet(first.id);
-        }
-      }
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : "נכשל בטעינת גיליונות מ-Google Drive");
-    } finally {
-      setIsLoadingList(false);
-    }
-  }
-
-  async function selectSpreadsheet(id: string) {
-    setSelectedSheetId(id);
-    setIsLoadingValues(true);
-    setActionError(null);
-    try {
-      const details = await getSpreadsheetDetails(id);
-      setSheetDetails(details);
-      const firstTabName = details.sheets[0]?.properties.title || "Sheet1";
-      setSelectedTab(firstTabName);
-      await loadTabValues(id, firstTabName);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : "שגיאה בקריאת פרטי הגיליון");
-    } finally {
-      setIsLoadingValues(false);
-    }
-  }
-
-  async function loadTabValues(id: string, tabName: string) {
-    setIsLoadingValues(true);
-    try {
-      const values = await getSpreadsheetValues(id, `'${tabName}'!A1:Z30`);
-      setTabValues(values);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : "שגיאה בטעינת שורות הגיליון");
-    } finally {
-      setIsLoadingValues(false);
-    }
   }
 
   // Execute creation after explicit confirmation dialog

@@ -58,7 +58,23 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     cachedAccessToken = credential.accessToken;
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error: unknown) {
-    console.error("Sign in error:", error);
+    const firebaseCode = (error as { code?: string })?.code;
+    // When the user deliberately closes the popup or cancels, handle it gracefully
+    if (
+      firebaseCode === "auth/popup-closed-by-user" ||
+      firebaseCode === "auth/cancelled-popup-request"
+    ) {
+      console.info("[GoogleAuth] התחברות בוטלה או שהחלון נסגר על ידי המשתמש.");
+      return null;
+    }
+
+    if (firebaseCode === "auth/popup-blocked") {
+      throw new Error(
+        "חלון ההתחברות נחסם על ידי הדפדפן. יש לאשר חלונות קופצים (Popups) בדפדפן ולנסות שוב.",
+      );
+    }
+
+    console.warn("[GoogleAuth] שגיאה בהתחברות:", error);
     throw error;
   } finally {
     isSigningIn = false;
